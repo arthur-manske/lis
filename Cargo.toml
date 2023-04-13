@@ -1,0 +1,23 @@
+[package]
+name = "list"
+version = "0.2.0"
+authors = ["A.M"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chrono = "0.4.19"
+colored = "2.0.0"
+
+[profile.release]
+opt-level = 3
+lto = true
+
+[[bin]]
+name = "list"
+path = "src/main.rs"
+
+[install]
+prefix = "/usr/local" # dir to install manually
+bindir = "bin"
