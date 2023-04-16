@@ -42,36 +42,33 @@ impl Arguments {
         //To-do transfer some functions to here, this project is not my current main project, so this can be a little bit late, if you can help the code make a pull request or take a issue
     }
     fn order_files(&self, mut entries: Vec<DirEntry>) -> Vec<DirEntry> {
-        match self.no_ordering {
-            true => entries.sort_by_cached_key(|entry| {
-                let file_type = entry_type(entry);
-                let is_dir = file_type.0;
-                let is_symlink = file_type.1;
-                let is_hidden = entry
+        entries.sort_by_cached_key(|entry| {
+            let file_type = entry_type(entry);
+            let is_dir = file_type.0;
+            let is_symlink = file_type.1;
+            let is_hidden = entry
+                .path()
+                .file_name()
+                .map_or(false, |name| name.to_string_lossy().starts_with('.'));
+            let priority = match (is_dir, is_symlink, is_hidden) {
+                (true, _, false) => 0,
+                (_, true, false) => 1,
+                (_, _, false) => 2,
+                (true, _, true) => 3,
+                (_, true, true) => 4,
+                (_, _, true) => 5,
+            };
+            (
+                priority,
+                entry
                     .path()
                     .file_name()
-                    .map_or(false, |name| name.to_string_lossy().starts_with('.'));
-                let priority = match (is_dir, is_symlink, is_hidden) {
-                    (true, _, false) => 0,
-                    (_, true, false) => 1,
-                    (_, _, false) => 2,
-                    (true, _, true) => 3,
-                    (_, true, true) => 4,
-                    (_, _, true) => 5,
-                };
-                (
-                    priority,
-                    entry
-                        .path()
-                        .file_name()
-                        .unwrap()
-                        .to_string_lossy()
-                        .to_string(),
-                    is_hidden,
-                )
-            }),
-            false => (),
-        }
+                    .unwrap()
+                    .to_string_lossy()
+                    .to_string(),
+                is_hidden,
+            )
+        });
         entries
     }
 }
