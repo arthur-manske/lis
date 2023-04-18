@@ -101,7 +101,7 @@ impl Arguments {
             Some(3) => {
                 println!("How to use: list + directory(optional) + argument(optional)");
                 self.print_and_explain_valid_arguments();
-                println!("Version: {}", "0.2.01".color(PATH_COLOR));
+                println!("Version: {}", "0.2.1".color(PATH_COLOR));
                 std::process::exit(0);
             }
             Some(4) => self.show_hidden = true,
