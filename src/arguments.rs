@@ -1,13 +1,9 @@
-use colored::{Color, Colorize};
+use crate::printer::error;
+use crate::printer::helper;
 use std::env;
 use std::fs;
 use std::fs::DirEntry;
-
-const SYMLINK_COLOR: Color = Color::BrightBlue;
-const ERROR_COLOR: Color = Color::BrightRed;
-const PATH_COLOR: Color = Color::BrightGreen;
-const ARGUMENT_COLOR: Color = Color::Blue;
-const VALID_ARGUMENTS: [&str; 7] = ["-a", "-p", "-d", "-h", "-sh", "-s", "-no"];
+pub const VALID_ARGUMENTS: [&str; 7] = ["-a", "-p", "-d", "-h", "-sh", "-s", "-no"];
 
 #[derive(Clone)]
 pub struct Arguments {
@@ -23,12 +19,8 @@ impl Arguments {
         let entries: Vec<_> = match fs::read_dir(path) {
             Ok(entries) => entries.filter_map(|entry| entry.ok()).collect(),
             Err(e) => {
-                eprintln!(
-                    "{} failed on opening directory:'{}'",
-                    path.color(ERROR_COLOR),
-                    e.to_string().color(ERROR_COLOR)
-                );
-                std::process::exit(0);
+                error("Can't read directory", &e.to_string());
+                std::process::exit(1);
             }
         };
         match self.no_ordering {
@@ -66,21 +58,6 @@ impl Arguments {
         });
         entries
     }
-    fn print_and_explain_valid_arguments(&self) {
-        println!("The {} arguments are:", "valids".color(SYMLINK_COLOR));
-        let arg_func: [&str; VALID_ARGUMENTS.len()] = [
-        "all, made all the parameters active, expect by the help parameter and the no ordering parameter",
-        "show the permissions of the file",
-        "show the last modification date of the file",
-        "explain how to use the program",
-        "show hidden files",
-        "show the files size",
-        "don't order the files",
-    ];
-        for (i, &valid_arg) in VALID_ARGUMENTS.iter().enumerate() {
-            println!("{}  -  {}", valid_arg.color(ARGUMENT_COLOR), arg_func[i]);
-        }
-    }
     fn parse_path(&self, mut path: String) -> String {
         if !path.ends_with('/') {
             path.push('/');
@@ -98,23 +75,14 @@ impl Arguments {
             }
             Some(1) => self.perm = true,
             Some(2) => self.date = true,
-            Some(3) => {
-                println!("How to use: list + directory(optional) + argument(optional)");
-                self.print_and_explain_valid_arguments();
-                println!("Version: {}", "0.2.1".color(PATH_COLOR));
-                std::process::exit(0);
-            }
+            Some(3) => helper(),
             Some(4) => self.show_hidden = true,
             Some(5) => self.size = true,
             Some(6) => self.no_ordering = true,
-            _ => {
-                println!(
-                    "{} invalid argument, type 'list {}' to see all the arguments",
-                    "Error:".color(ERROR_COLOR),
-                    VALID_ARGUMENTS[3]
-                );
-                std::process::exit(0);
-            }
+            _ => error(
+                "Invalid argument",
+                "type 'list -h' to see all the arguments",
+            ),
         }
         self
     }
