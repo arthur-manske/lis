@@ -1,4 +1,6 @@
 use crate::arguments::Arguments;
+use crate::arguments::VALID_ARGUMENTS;
+use crate::VERSION;
 use chrono::Datelike;
 use colored::{Color, Colorize};
 use std::fs::DirEntry;
@@ -11,6 +13,8 @@ const ERROR_COLOR: Color = Color::BrightRed;
 const DATE_COLOR: Color = Color::BrightGreen;
 const PERMISSIONS_COLOR: Color = Color::BrightWhite;
 const SIZE_COLOR: Color = Color::BrightWhite;
+const PATH_COLOR: Color = Color::BrightBlue;
+const ARGUMENT_COLOR: Color = Color::Blue;
 
 fn human_readable_size(size: u64) -> String {
     const KIB: u64 = 1024;
@@ -100,7 +104,7 @@ fn format_file_name(entry: &DirEntry) -> (String, Color) {
     result
 }
 
-pub fn print_file(entry: &DirEntry, mut arguments: Arguments) {
+fn print_file(entry: &DirEntry, mut arguments: Arguments) {
     match entry.file_name().to_string_lossy().starts_with('.') && !arguments.show_hidden {
         true => return,
         false => (),
@@ -159,4 +163,38 @@ pub fn print_file(entry: &DirEntry, mut arguments: Arguments) {
         size.color(SIZE_COLOR),
         date.color(DATE_COLOR)
     );
+}
+
+pub fn printer(entries: Vec<DirEntry>, arguments: Arguments, path: String) {
+    println!(
+        "The content of the directory: {} is:",
+        path.color(PATH_COLOR)
+    );
+    for entry in entries {
+        print_file(&entry, arguments.clone());
+    }
+}
+
+pub fn error(message: &str, e: &str) {
+    println!("{}: {}", message, e.color(ERROR_COLOR));
+    std::process::exit(1);
+}
+
+pub fn helper() {
+    println!("How to use: list + directory(optional) + argument(optional)");
+    println!("The {} arguments are:", "valids".color(SYMLINK_COLOR));
+    let arg_func: [&str; VALID_ARGUMENTS.len()] = [
+        "all, made all the parameters active, expect by the help parameter and the no ordering parameter",
+        "show the permissions of the file",
+        "show the last modification date of the file",
+        "explain how to use the program",
+        "show hidden files",
+        "show the files size",
+        "don't order the files",
+    ];
+    for (i, &valid_arg) in VALID_ARGUMENTS.iter().enumerate() {
+        println!("{}  -  {}", valid_arg.color(ARGUMENT_COLOR), arg_func[i]);
+    }
+    println!("Version: {}", VERSION);
+    std::process::exit(0);
 }
