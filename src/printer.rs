@@ -37,12 +37,12 @@ fn human_readable_size(size: u64) -> String {
                     TIB => "TiB",
                     _ => unreachable!(),
                 };
-                return format!(" - size: {:.2} {}", size, unit);
+                return format!("- size: {:.2} {}", size, unit);
             }
-            false => return format!(" - size: {}B", size),
+            false => return format!("- size: {}B", size),
         }
     }
-    String::from(" - size 0B")
+    String::from("- size 0B")
 }
 
 fn human_readable_permissions(mode: u32) -> String {
@@ -71,7 +71,7 @@ fn human_readable_date(timestamp: u64) -> String {
         _ => return String::from(" - Error: Can not obtain the file date"),
     };
     format!(
-        " - Mod. Date: {:2}/{}/{:02}",
+        "- Mod. Date: {:2}/{}/{:02}",
         date.day(),
         date.month() - 1,
         date.year() % 100
@@ -83,7 +83,7 @@ fn entry_type(entry: &DirEntry) -> (bool, bool) {
     (file_type.is_dir(), file_type.is_symlink())
 }
 
-fn format_file_name(entry: &DirEntry) -> (String, Color) {
+fn format_entry_name(entry: &DirEntry) -> (String, Color) {
     let result: (String, Color) = {
         let mut name: String = entry.file_name().to_str().expect("").to_owned();
         let mut color: Color = FILE_COLOR;
@@ -123,11 +123,7 @@ fn print_file(entry: &DirEntry, mut arguments: Arguments) {
                 arguments.perm = false;
                 arguments.date = false;
                 arguments.size = false;
-                println!(
-                    "{} can't obtain metadata: {}",
-                    "Error:".color(ERROR_COLOR),
-                    e.to_string().color(ERROR_COLOR)
-                )
+                error("Can't obtain metadata", &e.to_string());
             }
         },
     }
@@ -153,9 +149,9 @@ fn print_file(entry: &DirEntry, mut arguments: Arguments) {
         false => String::from(""),
         true => human_readable_size(entry.metadata().expect("").len()),
     };
-    let file_info = format_file_name(entry);
-    let name = file_info.0;
-    let color = file_info.1;
+    let entry_info = format_entry_name(entry);
+    let name = entry_info.0;
+    let color = entry_info.1;
     println!(
         "{}{}{}{}",
         permissions.color(PERMISSIONS_COLOR),
@@ -184,16 +180,16 @@ pub fn helper() {
     println!("How to use: list + directory(optional) + argument(optional)");
     println!("The {} arguments are:", "valids".color(SYMLINK_COLOR));
     let arg_func: [&str; VALID_ARGUMENTS.len()] = [
-        "all, made all the parameters active, expect by the help parameter and the no ordering parameter",
-        "show the permissions of the file",
-        "show the last modification date of the file",
         "explain how to use the program",
-        "show hidden files",
-        "show the files size",
+        "all, made all the parameters active, expect by the help parameter and the no ordering parameter",
+        "show the last modification date of the file",
         "don't order the files",
+        "show the permissions of the file",
+        "show the files size",
+        "show hidden files",
     ];
     for (i, &valid_arg) in VALID_ARGUMENTS.iter().enumerate() {
-        println!("{}  -  {}", valid_arg.color(ARGUMENT_COLOR), arg_func[i]);
+        println!("{} - {}", valid_arg.color(ARGUMENT_COLOR), arg_func[i]);
     }
     println!("Version: {}", VERSION);
     std::process::exit(0);
