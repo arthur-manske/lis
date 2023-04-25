@@ -4,7 +4,15 @@ use crate::PROGRAM_NAME;
 use std::env;
 use std::fs;
 use std::fs::DirEntry;
-pub const VALID_ARGUMENTS: [&str; 7] = ["-h", "-a", "-d", "-no", "-p", "-s", "-sh"];
+pub const VALID_ARGUMENTS: [&str; 6] = [
+    "--help",
+    "--date",
+    "--no-order",
+    "--permissions",
+    "--size",
+    "--show-hidden",
+];
+pub const VALID_ABREVIATIONS: [&str; 7] = ["-h", "-d", "-no", "-p", "-s", "-sh", "-a"];
 
 #[derive(Clone)]
 pub struct Arguments {
@@ -74,29 +82,36 @@ impl Arguments {
         }
         path
     }
-    fn parse_arguments(mut self, argument: &str) -> Self {
+    fn parse_arguments(&mut self, argument: &str) {
         match VALID_ARGUMENTS.iter().position(|&x| x == argument) {
             Some(0) => helper(),
-            Some(1) => {
-                self.perm = true;
-                self.date = true;
-                self.show_hidden = true;
-                self.size = true;
-            }
-            Some(2) => self.date = true,
-            Some(3) => self.no_ordering = true,
-            Some(4) => self.perm = true,
-            Some(5) => self.size = true,
-            Some(6) => self.show_hidden = true,
-            _ => error(
-                "Invalid argument",
-                &format!(
-                    "type '{} {}' to see all the arguments",
-                    PROGRAM_NAME, VALID_ARGUMENTS[0]
+            Some(1) => self.date = true,
+            Some(2) => self.no_ordering = true,
+            Some(3) => self.perm = true,
+            Some(4) => self.size = true,
+            Some(5) => self.show_hidden = true,
+            _ => match VALID_ABREVIATIONS.iter().position(|&x| x == argument) {
+                Some(0) => helper(),
+                Some(1) => self.date = true,
+                Some(2) => self.no_ordering = true,
+                Some(3) => self.perm = true,
+                Some(4) => self.size = true,
+                Some(5) => self.show_hidden = true,
+                Some(6) => {
+                    self.perm = true;
+                    self.date = true;
+                    self.show_hidden = true;
+                    self.size = true;
+                }
+                _ => error(
+                    "Invalid argument",
+                    &format!(
+                        "type '{} {}' to see all the arguments",
+                        PROGRAM_NAME, VALID_ARGUMENTS[0]
+                    ),
                 ),
-            ),
+            },
         }
-        self
     }
     pub fn interpreter(mut self) -> (Arguments, String) {
         let command_arguments = env::args().skip(1);
@@ -104,7 +119,7 @@ impl Arguments {
         for argument in command_arguments {
             match !argument.starts_with('-') {
                 true => path = self.parse_path(argument),
-                false => self = self.parse_arguments(&argument),
+                false => self.parse_arguments(&argument),
             }
         }
         (self, path)
