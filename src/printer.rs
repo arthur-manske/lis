@@ -142,7 +142,7 @@ fn print_file(entry: &DirEntry, arguments: &Arguments) {
     );
 }
 
-pub fn printer(entries: Vec<DirEntry>, mut arguments: Arguments, path: String) {
+pub fn printer(entries: Vec<DirEntry>, mut arguments: Arguments, path: &str) {
     println!(
         "The content of the directory: {} is:",
         path.color(PATH_COLOR)
