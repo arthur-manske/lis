@@ -1,5 +1,6 @@
 use crate::arguments::Arguments;
 use crate::arguments::VALID_ARGUMENTS;
+use crate::arguments::VALID_ABREVIATIONS;
 use crate::VERSION;
 use chrono::Datelike;
 use colored::{Color, Colorize};
@@ -37,17 +38,17 @@ fn human_readable_size(size: u64) -> String {
                     TIB => "TiB",
                     _ => unreachable!(),
                 };
-                return format!("- size: {:.2} {}", size, unit);
+                return format!(" - {:.2} {}", size, unit);
             }
-            false => return format!("- size: {}B", size),
+            false => return format!(" - {}B", size),
         }
     }
-    String::from("- size 0B")
+    String::from(" - 0B")
 }
 
 fn human_readable_permissions(mode: u32) -> String {
     let permissions: [&str; 3] = ["r", "w", "x"];
-    let groups: [&str; 3] = ["User", "Group", "Other"];
+    let groups: [&str; 3] = ["U", "G", "O"];
     let mut result = String::new();
     for i in (0..9).step_by(3) {
         let bits = (mode >> i) & 0b111;
@@ -62,6 +63,7 @@ fn human_readable_permissions(mode: u32) -> String {
         result.push(' ');
     }
     result.push_str(" - ");
+    result.insert(0, ' ');
     result
 }
 
@@ -71,7 +73,7 @@ fn human_readable_date(timestamp: u64) -> String {
         _ => return String::from(" - Error: Can not obtain the file date"),
     };
     format!(
-        "- Mod. Date: {:2}/{}/{:02}",
+        " - {:2}/{}/{:02}",
         date.day(),
         date.month() - 1,
         date.year() % 100
@@ -104,28 +106,9 @@ fn format_entry_name(entry: &DirEntry) -> (String, Color) {
     result
 }
 
-fn print_file(entry: &DirEntry, mut arguments: Arguments) {
-    match entry.file_name().to_string_lossy().starts_with('.') && !arguments.show_hidden {
-        true => return,
-        false => (),
-    }
-    match entry.metadata() {
-        Ok(_) => (),
-        Err(e) => match arguments {
-            Arguments {
-                show_hidden: _,
-                perm: false,
-                date: false,
-                size: false,
-                no_ordering: _,
-            } => (),
-            _ => {
-                arguments.perm = false;
-                arguments.date = false;
-                arguments.size = false;
-                error("Can't obtain metadata", &e.to_string());
-            }
-        },
+fn print_file(entry: &DirEntry, arguments: &Arguments) {
+    if entry.file_name().to_string_lossy().starts_with('.') && !arguments.show_hidden {
+        return;
     }
     let date: String = match arguments.date {
         false => String::from(""),
@@ -149,25 +132,34 @@ fn print_file(entry: &DirEntry, mut arguments: Arguments) {
         false => String::from(""),
         true => human_readable_size(entry.metadata().expect("").len()),
     };
-    let entry_info = format_entry_name(entry);
-    let name = entry_info.0;
-    let color = entry_info.1;
+    let (entry_name, entry_color) = format_entry_name(entry);
     println!(
         "{}{}{}{}",
         permissions.color(PERMISSIONS_COLOR),
-        name.color(color),
+        entry_name.color(entry_color),
         size.color(SIZE_COLOR),
         date.color(DATE_COLOR)
     );
 }
 
-pub fn printer(entries: Vec<DirEntry>, arguments: Arguments, path: String) {
+pub fn printer(entries: Vec<DirEntry>, mut arguments: Arguments, path: String) {
     println!(
         "The content of the directory: {} is:",
         path.color(PATH_COLOR)
     );
     for entry in entries {
-        print_file(&entry, arguments.clone());
+        match entry.metadata() {
+            Ok(_) => (),
+            Err(e) => {
+                if arguments.size | arguments.perm | arguments.date {
+                    arguments.perm = false;
+                    arguments.date = false;
+                    arguments.size = false;
+                    error("Can't obtain metadata", &e.to_string());
+                }
+            }
+        }
+        print_file(&entry, &arguments);
     }
 }
 
@@ -181,15 +173,34 @@ pub fn helper() {
     println!("The {} arguments are:", "valids".color(SYMLINK_COLOR));
     let arg_func: [&str; VALID_ARGUMENTS.len()] = [
         "explain how to use the program",
-        "all, made all the parameters active, expect by the help parameter and the no ordering parameter",
         "show the last modification date of the file",
         "don't order the files",
         "show the permissions of the file",
         "show the files size",
         "show hidden files",
     ];
+    let binding_for: [&str; VALID_ABREVIATIONS.len()] = [
+        "--help",
+        "--date",
+        "--no-order",
+        "--permissions",
+        "--size",
+        "--show-hidden",
+        "--show-hidden + --size + --permissions + --date",
+    ];
     for (i, &valid_arg) in VALID_ARGUMENTS.iter().enumerate() {
         println!("{} - {}", valid_arg.color(ARGUMENT_COLOR), arg_func[i]);
+    }
+    println!(
+        "The {} abreviations for arguments are: ",
+        "valids".color(SYMLINK_COLOR)
+    );
+    for (i, &valid_arg) in VALID_ABREVIATIONS.iter().enumerate() {
+        println!(
+            "{} for {}",
+            valid_arg.color(SYMLINK_COLOR),
+            binding_for[i].color(ARGUMENT_COLOR)
+        );
     }
     println!("Version: {}", VERSION);
     std::process::exit(0);
