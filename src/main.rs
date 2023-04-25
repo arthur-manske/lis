@@ -7,5 +7,5 @@ pub const VERSION: &str = "0.2.1";
 
 fn main() {
     let (arguments, path) = Arguments::new().interpreter();
-    printer(arguments.analyze_entries(&path), arguments, path)
+    printer(arguments.analyze_entries(&path), arguments, &path)
 }
