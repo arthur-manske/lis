@@ -34,7 +34,7 @@ impl Arguments {
         }
     }
     pub fn analyze_entries(&self, path: &str) -> Vec<DirEntry> {
-        let entries: Vec<_> = match fs::read_dir(path) {
+        let entries: Vec<DirEntry> = match fs::read_dir(path) {
             Ok(entries) => entries.filter_map(|entry| entry.ok()).collect(),
             Err(e) => {
                 error("Can't read directory", &e.to_string());
