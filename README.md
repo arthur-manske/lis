@@ -7,12 +7,12 @@ $ list [FLAGS] [OPTIONS]
 `
 ## Flags
     -h or --help: Prints help information
-    -a or --all: Shows hidden files and directories
     -no or --no-order: Shows files and directories without sorting them
     -sh or --show-hidden: Shows hidden files and directories
     -s or --size: Sorts files and directories by size
     -d or --date: Sorts files and directories by date
-    -p or --perm: Shows file permissions
+    -p or --permissions: Shows file permissions
+    -a same as '--permissions' + '--date' + '--size' + '--show-hidden'
 
 ## Examples
 
@@ -43,6 +43,8 @@ If you want to contribute to List, feel free to submit a pull request. Any contr
 ## Warning
 
 This project is not my main project, so be warned that new versions may take longer than usual to be released.
+If you wanna see the plans for our next release, please check it out on [todo](ToDo.md)
+
 ## License
 
-BSD 3-Clause License. See [LICENSE](LICENSE) for details.
+### BSD 3-Clause License. See the complete [license](LICENSE) for details.
