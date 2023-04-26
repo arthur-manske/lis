@@ -73,9 +73,9 @@ fn human_readable_date(timestamp: u64) -> String {
         _ => return String::from(" - Error: Can not obtain the file date"),
     };
     format!(
-        " - {:2}/{}/{:02}",
+        " - {:02}/{:02}/{:02}",
         date.day(),
-        date.month() - 1,
+        date.month(),
         date.year() % 100
     )
 }
