@@ -1,18 +1,17 @@
 [package]
-name = "list"
+name = "lis"
 version = "0.2.2"
-authors = ["A.M"]
+authors = ["Arthur Manske"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chrono = "0.4.19"
-colored = "2.0.0"
+libc = "0.2.142"
 
 [profile.release]
 opt-level = 3
-lto = true
+lto = "fat"
 
 [[bin]]
 name = "list"
