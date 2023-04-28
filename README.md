@@ -1,9 +1,9 @@
-# List - Rust implementation of ls command
+# Lis - Rust implementation of ls command
 
-List is a simple Rust project created as an alternative to the ls command, capable of ordering files and directories, differentiating symbolic links and directories by color, and adding '@' to symbolic links and '/' to directories.
+Lis is a simple Rust project created as an alternative to the ls command, capable of ordering files and directories, differentiating symbolic links and directories by color, and adding '@' to symbolic links and '/' to directories.
 ## Usage
 `
-$ list [FLAGS] [OPTIONS]
+$ lis [FLAGS] [OPTIONS]
 `
 ## Flags
     -h or --help: Prints help information
@@ -17,16 +17,16 @@ $ list [FLAGS] [OPTIONS]
 ## Examples
 
 ### Show no hidden files and directories:
-`$ list`
+`$ lis`
 
 ### Shows all files and directories:
-`$ list -sh`
+`$ lis -sh`
 
 ### Shows all files and directories with size:
-`$ list -s -sh`
+`$ lis -s -sh`
 
 ### Shows all files and directories, including hidden ones, with date, in the ~/Downloads directory:
-`$ list -sh -d ~/Downloads`
+`$ lis -sh -d ~/Downloads`
 
 ## Installation
 
