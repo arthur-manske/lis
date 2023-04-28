@@ -4,6 +4,7 @@ use crate::PROGRAM_NAME;
 use std::env;
 use std::fs;
 use std::fs::DirEntry;
+
 pub const VALID_ARGUMENTS: [&str; 6] = [
     "--help",
     "--date",
@@ -12,6 +13,7 @@ pub const VALID_ARGUMENTS: [&str; 6] = [
     "--size",
     "--show-hidden",
 ];
+
 pub const VALID_ABREVIATIONS: [&str; 7] = ["-h", "-d", "-no", "-p", "-s", "-sh", "-a"];
 
 #[derive(Clone)]
@@ -35,7 +37,24 @@ impl Arguments {
     }
     pub fn analyze_entries(&self, path: &str) -> Vec<DirEntry> {
         let entries: Vec<DirEntry> = match fs::read_dir(path) {
-            Ok(entries) => entries.filter_map(|entry| entry.ok()).collect(),
+            Ok(entries) => match self.show_hidden {
+                true => entries.filter_map(|entry| entry.ok()).collect(),
+                false => {
+                    let mut result: Vec<DirEntry> = entries.filter_map(|entry| entry.ok()).collect();
+                    let mut i: usize = 0;
+                    while i < result.len() {
+                        let entry = &result[i];
+                        if let Some(name) = entry.file_name().to_str() {
+                            if name.starts_with('.') {
+                                result.remove(i);
+                                continue;
+                            }
+                        }
+                        i += 1;
+                    }
+                    result
+                }
+            },
             Err(e) => {
                 error("Can't read directory", &e.to_string());
                 std::process::exit(1);
@@ -47,7 +66,7 @@ impl Arguments {
         }
     }
     fn order_files(&self, mut entries: Vec<DirEntry>) -> Vec<DirEntry> {
-        entries.sort_by_cached_key(|entry| {
+        entries.sort_by_key(|entry| {
             let file_type = entry.file_type().expect("");
             let is_dir = file_type.is_dir();
             let is_symlink = file_type.is_symlink();
