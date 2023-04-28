@@ -66,7 +66,7 @@ impl Arguments {
         }
     }
     fn order_files(&self, mut entries: Vec<DirEntry>) -> Vec<DirEntry> {
-        entries.sort_by_key(|entry| {
+        entries.sort_by_cached_key(|entry| {
             let file_type = entry.file_type().expect("");
             let is_dir = file_type.is_dir();
             let is_symlink = file_type.is_symlink();
