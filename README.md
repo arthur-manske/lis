@@ -31,11 +31,14 @@ $ lis [FLAGS] [OPTIONS]
 ## Installation
 
 To install the program on your system, you need to have Rust installed. If you don't have it yet, you can download it from the official website at https://www.rust-lang.org/tools/install.
-Once Rust is installed, you can download the source code and navigate to the directory where it is located. From there, you can run the following command to install the program:
+Once Rust is installed, you can download the source code and navigate to the directory where it is located. From there, you can run the following command to install the program(I recommend you to read all the parameters valid for the 'install.sh' with '--help'): 
 
-`$ sudo cargo install --path . --root=/usr/local/`
+`$ ./install.sh --system`
 
-This will compile the program and install it to the /usr/local/bin directory, which should be in your system's PATH. You can then use the program by running its name in the terminal.
+`$ ./install.sh --auto-complete-zsh` (This one is only if you use ZSH)
+
+
+This what you need to know to properly compile the program and to install it with this script. You can then use the program by running its name in the terminal.
 
 ## Contributing
 
