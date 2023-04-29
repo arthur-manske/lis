@@ -14,7 +14,7 @@ opt-level = 3
 lto = "fat"
 
 [[bin]]
-name = "list"
+name = "lis"
 path = "src/main.rs"
 
 [install]
