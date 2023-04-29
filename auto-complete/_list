@@ -1,0 +1,15 @@
+#compdef list
+
+_arguments \
+        "--help[prints help informations]" \
+        "--show-hidden[show hidden files]" \
+        "--size[show files size]" \
+        "--permissions[show files permissions]" \
+        "--date[show files dates]" \
+        "-h[prints help informations]" \
+        "-a[set all arguments to active]" \
+        "-sh[show hidden files]" \
+        "-s[show files size]" \
+        "-p[show files permissions]" \
+        "-d[show files dates]" \
+        "*:filename:_files"
