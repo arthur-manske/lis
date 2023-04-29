@@ -1,4 +1,4 @@
-#compdef list
+#compdef lis
 
 _arguments \
         "--help[prints help informations]" \
