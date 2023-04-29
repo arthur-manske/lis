@@ -23,7 +23,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     -az|--auto-complete-zsh) # Adicionar o auto-complete
       echo "Adding auto-complete to usr/zsh/vendor-completions/_list"
-      sudo cp "auto-complete/_list" "/usr/share/vendor-completion"
+      sudo cp "auto-complete/_lis" "/usr/share/vendor-completion"
       exit 0
       ;;
     -r|--root) # Define o diretório de instalação
