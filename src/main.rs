@@ -1,11 +1,17 @@
-mod arguments;
-mod printer;
-use crate::arguments::Arguments;
-use crate::printer::printer;
-pub const PROGRAM_NAME: &str = "lis";
-pub const VERSION: &str = "0.2.2";
+pub mod arguments;
+pub mod print;
+pub mod lib {
+    pub mod color;
+    pub mod entries {
+        pub mod formating;
+        pub mod metadata;
+        pub mod types;
+    }
+}
+use arguments::Arguments;
+use print::printer;
 
 fn main() {
-    let (arguments, path) = Arguments::new().interpreter();
-    printer(arguments.analyze_entries(&path), arguments, &path)
+    let (arguments, entries) = Arguments::interpreter();
+    printer(arguments, entries);
 }
