@@ -1,22 +1,25 @@
 [package]
-name = "lis"
-version = "0.2.2"
+name = "Lis"
+version = "0.2.3"
 authors = ["Arthur Manske"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-libc = "0.2.142"
+term_grid = "0.2.0"
+term_size = "0.3"
 
 [profile.release]
 opt-level = 3
 lto = "fat"
+debug-info = false
+panic = "abort"
+
+[profile.dev]
+opt-level = 1
+panic = "unwind"
 
 [[bin]]
 name = "lis"
 path = "src/main.rs"
-
-[install]
-prefix = "/usr/local" # dir to install manually
-bindir = "bin"
