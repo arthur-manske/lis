@@ -29,7 +29,7 @@ pub fn helper() {
         Some((size, _)) => size,
         None => 1, //Suposses that the terminal size is 1.
     };
-    match width >= 61 
+    match width >= 61 {
         //Temporary in this testing version, soon I will make a dynamic table system
         true => {
             println!("╭───────────────┬─────┬─────────────────────────────────────╮");
