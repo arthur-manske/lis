@@ -1,15 +1,23 @@
 #compdef lis
 
 _arguments \
-        "--help[prints help informations]" \
-        "--show-hidden[show hidden files]" \
-        "--size[show files size]" \
-        "--permissions[show files permissions]" \
-        "--date[show files dates]" \
-        "-h[prints help informations]" \
-        "-a[set all arguments to active]" \
-        "-sh[show hidden files]" \
-        "-s[show files size]" \
-        "-p[show files permissions]" \
-        "-d[show files dates]" \
-        "*:filename:_files"
+	"--help[Prints help informations]" \
+	"-h[Prints help informations]" \
+        "--version[Shows the program version]" \
+        "-v[Shows the program version]" \
+        "--date[Shows the last modification date of the files]" \
+        "--size[Shows the files size]" \
+        "--permissions[Shows files permissions]" \
+        "--no-order[Prints the files without ordering]" \
+        "--show-hidden[Show hidden files]" \
+        "-d[Shows the last modification date of the files]" \
+        "-s[Shows the files size]" \
+        "-p[Shows files permissions]" \
+        "-no[Prints the files without ordering]" \
+        "-sh[Show hidden files]" \
+        "-a[Actives -d, -s, -p and -sh]" \
+        "--all[Actives -d, -s, -p and -sh]" \
+        "--lines[Force to print the files as lines]" \
+        "-l[Force to print the files as lines]" \
+        '*:filename:_files'
+
