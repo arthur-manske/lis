@@ -46,4 +46,4 @@ If you want to contribute to Lis, feel free to submit a pull request. Any contri
 This project is not my main project, so be warned that new versions may take longer than usual to be released.
 
 ## License
-### BSD 3-Clause License. See the complete [license](LICENSE) for details.
+### See the [license](LICENSE).
