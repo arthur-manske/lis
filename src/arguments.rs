@@ -36,12 +36,7 @@ impl Arguments {
             Ok(entries) if self.show_hidden => entries.filter_map(|entry| entry.ok()).collect(),
             Ok(entries) => entries
                 .filter_map(|entry| {
-                    if entry
-                        .as_ref()
-                        .expect("")
-                        .file_name()
-                        .to_string_lossy()
-                        .starts_with('.')
+                    if entry.as_ref().expect("").file_name().to_str().unwrap().starts_with('.')
                     {
                         None
                     } else {
@@ -55,14 +50,7 @@ impl Arguments {
         };
         entries
     }
-
-    fn parse_path(&self, mut path: String) -> String {
-        if !path.ends_with('/') {
-            path.push('/');
-        }
-        path
-    }
-
+        
     fn parse_arguments(&mut self, argument: &str) {
         match argument {
             "--help"        | "-h"  => helper(),
@@ -89,11 +77,11 @@ impl Arguments {
     pub fn interpreter() -> (Arguments, Vec<DirEntry>) {
         let mut arguments = Arguments::default();
         let command_arguments = args().skip(1);
-        let mut path: String = current_dir().unwrap().to_str().unwrap().to_owned();
+        let mut path = String::from(current_dir().unwrap().to_str().unwrap());
         for argument in command_arguments {
             match !argument.starts_with('-') {
-                true => path = arguments.parse_path(argument),
-                false => arguments.parse_arguments(&argument.to_lowercase()),
+                true => path = argument,
+                false => arguments.parse_arguments(&argument),
             }
         }
         let entries = arguments.analyze_entries(&path);
