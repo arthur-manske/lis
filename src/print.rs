@@ -97,10 +97,11 @@ fn format_entries_names(entries: &Vec<DirEntry>, arguments: &Arguments) -> (usiz
     const ASCII_FORMATING_CHARS: usize = 11;
     let mut entries_names: Vec<String> = vec![];
     let mut higher_len: usize = 0;
-    for entry in entries {
+    for entry in &entries {
         let entry_name = format_entry_name(entry);
-        if entry_name.len() - ASCII_FORMATING_CHARS > higher_len { 
-            higher_len = entry_name.len() - ASCII_FORMATING_CHARS;
+        let entry_name_len = entry_name.chars().count() - ASCII_FORMATING_CHARS;
+        if entry_name_len > higher_len {
+            higher_len = entry_name_len;
         }
         entries_names.push(entry_name);
     }
@@ -111,7 +112,7 @@ fn format_entries_names(entries: &Vec<DirEntry>, arguments: &Arguments) -> (usiz
             let [date, permissions, size] = read_metadata(&entry, &arguments);
             let spacing = {
                 let mut result = String::from("");
-                let min_len = higher_len - (name.len() - ASCII_FORMATING_CHARS);
+                let min_len = higher_len - (name.chars().count() - ASCII_FORMATING_CHARS);
                 while result.len() < min_len {
                     result.push(' ');
                 }
