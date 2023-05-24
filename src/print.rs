@@ -10,7 +10,7 @@ const ERROR_COLOR: Color = Color::Red;
 const ARGUMENTS_COLOR: Color = Color::White;
 
 pub fn error<T: std::fmt::Display>(error_message: T, error_description: T) -> i32 {
-    //For leading with &str and Strings types, but the two have to be of the same type at this point.
+    //Call this as: std::process::exit(error(message, description))
     println!(
         "{}: {}",
         error_message,
@@ -21,59 +21,36 @@ pub fn error<T: std::fmt::Display>(error_message: T, error_description: T) -> i3
 
 pub fn helper() {
     println!(
-        "How to use: lis [{}](Optional) [{}](Optional)",
-        format("DIRECTORY", Color::Blue, Format::Bold),
-        format("ARGUMENTS", Color::Blue, Format::Bold)
+        "Use: lis {}(Optional) {}(Optional)",
+        format("[DIRECTORY]", Color::Blue, Format::Bold),
+        format("[ARGUMENTS]", Color::Blue, Format::Bold)
     );
-    let width: usize = match dimensions() {
-        Some((size, _)) => size,
-        None => 1, //Suposses that the terminal size is 1.
-    };
-    match width >= 61 {
-        //Temporary in this testing version, soon I will make a dynamic table system
-        true => {
-            println!("╭───────────────┬─────┬─────────────────────────────────────╮");
-            println!("│   Argument    │ Abr │             Function                │");
-            println!("├───────────────┼─────┼─────────────────────────────────────┤");
-            println!("│ --help        │ -h  │ Explain the program use             │");
-            println!("│ --date        │ -d  │ Show the last mod date of the files │");
-            println!("│ --lines       │ -l  │ Force to print the files in lines   │");
-            println!("│ --no-order    │ -no │ Print the files without ordering    │");
-            println!("│ --permissions │ -p  │ Shows the files permissions         │");
-            println!("│ --size        │ -s  │ Shows the files size                │");
-            println!("│ --show-hidden │ -sh │ Shows the hidden files              │");
-            println!("│ --all         │ -a  │ Actives all the params              │");
-            println!("│ --version     │ -v  │ Prints the program version and quit │");
-            println!("╰───────────────┴─────┴─────────────────────────────────────╯");        
-        }
-        false => {
-            println!("Arguments:");
-            println!("--help        │ -h  │ Explain the program use");
-            println!("--date        │ -d  │ Show the last mod date of the files");
-            println!("--lines       │ -l  │ Force to print the files in lines");
-            println!("--no-order    │ -no │ Print the files without ordering");
-            println!("--permissions │ -p  │ Shows the files permissions");
-            println!("--size        │ -s  │ Shows the files size");
-            println!("--show-hidden │ -sh │ Shows the hidden files");
-            println!("--all         │ -a  │ Actives all the params");
-            println!("--version     │ -v  │ Prints the program version and quit");
-        }
-    }
+    println!("Arguments:");
+    println!("--help        │ -h  │ Explain the program use");
+    println!("--date        │ -d  │ Show the last mod date of the files");
+    println!("--lines       │ -l  │ Force to print the files in lines");
+    println!("--no-order    │ -no │ Print the files without ordering");
+    println!("--permissions │ -p  │ Shows the files permissions");
+    println!("--size        │ -s  │ Shows the files size");
+    println!("--show-hidden │ -sh │ Shows the hidden files");
+    println!("--all         │ -a  │ Actives all the params");
+    println!("--version     │ -v  │ Prints the program version and quit");
     std::process::exit(0)
 }
 
 pub fn version() {
-    println!("Version: T0.2.3");
+    println!("Version: 0.2.3");
+    println!("Edition: Development");
     std::process::exit(0)
 }
 
-fn print_entries_in_lines(entries: Vec<String>) {
+fn print_entries_as_one_per_line(entries: Vec<String>) {
     for entry in entries {
         println!("{}", entry); 
     }
 }
 
-fn print_entries_in_columns(higher_len: usize, entries: Vec<String>) {
+fn print_entries_as_grid(higher_len: usize, entries: Vec<String>) {
     let width: usize = match dimensions() {
         Some((size, _)) => size,
         None => 50, //Suposses that the terminal size is 50.
@@ -93,7 +70,7 @@ fn print_entries_in_columns(higher_len: usize, entries: Vec<String>) {
     }
 }
 
-fn format_entries_names(entries: &Vec<DirEntry>, arguments: &Arguments) -> (usize, Vec<String>) {
+fn format_entries_names(entries: Vec<DirEntry>, arguments: &Arguments) -> (usize, Vec<String>) {
     const ASCII_FORMATING_CHARS: usize = 11;
     let mut entries_names: Vec<String> = vec![];
     let mut higher_len: usize = 0;
@@ -141,10 +118,9 @@ pub fn printer(arguments: Arguments, entries: Vec<DirEntry>) {
     if entries.is_empty() {
         return println!("This directory is empty");
     }
-    let (higher_len, entries_names) = format_entries_names(&entries, &arguments);
-    if arguments.size() | arguments.permissions() | arguments.date() | arguments.force_print_as_lines() {
-        print_entries_in_lines(entries_names)
-    } else {
-        print_entries_in_columns(higher_len, entries_names)
+    let (higher_len, entries_names) = format_entries_names(entries, &arguments);
+    match [arguments.size(), arguments.permissions(), arguments.date(), arguments.force_print_as_lines()] {
+        [false, false, false, false] => print_entries_as_grid(higher_len, entries_names),
+        [_, _, _, _] => print_entries_as_one_per_line(entries_names) 
     }
 }
